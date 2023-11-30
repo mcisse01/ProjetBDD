@@ -14,7 +14,7 @@ import java.sql.ResultSet ;
 public class Machine {
     
     
-    //bonjour
+    
     private Connection conn;
 
     public Machine(Connection conn) {
