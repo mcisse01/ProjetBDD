@@ -1,6 +1,7 @@
 
 package fr.insa.gestionproduction;
 
+import static fr.insa.gestionproduction.Machine.menuGestionMachines;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
@@ -160,8 +161,7 @@ public class GestionProduction {
                     supprimerSchema();
                     break;
                 case 3:
-                    Machine gestion1 = new Machine(conn);
-                    gestion1.menuGestionMachines();
+                    menuGestionMachines(conn);
                     break;
                 case 4:
                     TypeOperation gestion2 = new TypeOperation(conn);
