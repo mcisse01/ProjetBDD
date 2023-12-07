@@ -134,7 +134,7 @@ public class GestionProduction {
     }
     
     // Méthode pour afficher le menu principal du programme et traiter les choix de l'utilisateur
-    public void menuPrincipal() {
+    public void menuPrincipal() throws SQLException {
         Scanner scanner = new Scanner(System.in);
         int choix;
         do {
