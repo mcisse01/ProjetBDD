@@ -1,4 +1,3 @@
-
 package fr.insa.gestionproduction;
 
 import java.sql.Connection;
@@ -6,173 +5,225 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.PreparedStatement;
 import java.util.Scanner;
-import java.sql.ResultSet ;
+import java.sql.ResultSet;
+import java.util.ArrayList;
+import java.util.List;
 /**
  *
  * @author moussa
  */
 public class TypeOperation {
     
-    // Attribut 
-    private Connection conn;
+    private int id;
+    private String ref;
+    private String des;
 
-    // Constructeur
-    public TypeOperation(Connection conn) {
-        this.conn = conn;
+    public TypeOperation(int id, String ref, String des) {
+        this.id = id;
+        this.ref = ref;
+        this.des = des;
     }
-    // Méthode pour ajouter un TypeOperation 
-    public void ajouterTypeOperation() {
-        try {
+
+    public TypeOperation(String ref, String des) {
+        this(-1, ref, des);
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public String getReference() {
+        return ref;
+    }
+
+    public void setReference(String ref) {
+        this.ref = ref;
+    }
+
+    public String getDescription() {
+        return des;
+    }
+    
+    public void setDescription(String des) {
+        this.des = des;
+    }
+
+    @Override
+    public String toString() {
+        return "Machine{" +
+                "id=" + id +
+                ", reference='" + ref + '\'' +
+                ", description='" + des  +
+                '}';
+    }
+
+    public static TypeOperation ajouterTypeOperation( Connection conn) throws SQLException {
+        
             Scanner scanner = new Scanner(System.in); 
+            System.out.print("Entrez la référence du TypeOperation : ");
+            String ref = scanner.nextLine();
             System.out.print("Entrez la description du TypeOperation : ");
             String des = scanner.nextLine();
             
+            TypeOperation nouvelleTypeOperation = new TypeOperation(ref, des);
+            
             try (PreparedStatement pst = conn.prepareStatement(
-                    "INSERT INTO typeoperation (des) VALUES (?)")) {
-                pst.setString(1, des); 
-                pst.executeUpdate(); 
-                System.out.println("TypeOperation ajoutée avec succès !"); 
+                 "INSERT INTO typeOperation (ref, des) VALUES (?, ?, ?)",
+                    PreparedStatement.RETURN_GENERATED_KEYS)) {
+                pst.setString(1, nouvelleTypeOperation.ref);
+                pst.setString(2, nouvelleTypeOperation.des);
+                pst.executeUpdate();
+                try (ResultSet rid = pst.getGeneratedKeys()) {
+                    rid.next();
+                    nouvelleTypeOperation.setId(rid.getInt(1));
+                }
+                System.out.println("du TypeOperation ajoutée avec succès !");
+            } catch (SQLException ex) {
+                System.out.println("Erreur lors de l'ajout du TypeOperation : " + ex.getMessage());
             }
-        } catch (SQLException ex) {
-            System.out.println("Erreur lors de l'ajout du TypeOperation : " + ex.getMessage()); 
-        }
+            
+        return nouvelleTypeOperation;   
     }
     
-    public void modifierTypeOperation() {
-        try {
+    public static TypeOperation modifierTypeOperation( Connection conn) throws SQLException {
+        
             Scanner scanner = new Scanner(System.in);
-            System.out.print("Entrez l'ID de TypeOperation que vous souhaitez modifier : ");
-            int idTypeOperation = scanner.nextInt();
-            scanner.nextLine(); 
-
+            System.out.print("Entrez l'ID du TypeOperation que vous souhaitez modifier : ");
+            int IdtypeOperation = scanner.nextInt();
+            scanner.nextLine();
+            
+            System.out.print("Entrez la nouvelle référence du TypeOperation : ");
+            String ref = scanner.nextLine();
             System.out.print("Entrez la nouvelle description du TypeOperation : ");
             String des = scanner.nextLine();
-            
-            try (PreparedStatement pst = conn.prepareStatement(
-                    "UPDATE typeoperation SET des = ? WHERE id = ?")) {
-                pst.setString(1, des);
-                pst.setInt(2, idTypeOperation);
-                int nbreligneaffecte = pst.executeUpdate();
 
-                if (nbreligneaffecte > 0) {
-                    System.out.println("TypeOperation modifiée avec succès !");
-                } else {
-                    System.out.println("Aucun TypeOperation trouvée avec l'ID donné.");
-                }
-            }
-        } catch (SQLException ex) {
-            System.out.println("Erreur lors de la modification du TypeOperation : " + ex.getMessage());
-        }
-    
-    }
-    
-    public void supprimerTypeOperation() {
-        try {
-            Scanner scanner = new Scanner(System.in);
-            System.out.print("Entrez l'ID du TypeOperation à supprimer : ");
-            int IdTypeOperation = scanner.nextInt();
-            scanner.nextLine(); 
-            
             try (PreparedStatement pst = conn.prepareStatement(
-                    "DELETE FROM typeoperation WHERE id = ?")) {
-                pst.setInt(1, IdTypeOperation); 
-                int nbreligneaffecte = pst.executeUpdate(); 
+                  "UPDATE typeOperation SET ref = ?, des = ? WHERE id = ?")) {
+                pst.setString(1, ref);
+                pst.setString(2, des);
+                pst.setInt(4, IdtypeOperation);
                 
-                if (nbreligneaffecte > 0) {
-                    System.out.println("TypeOperation supprimée avec succès !");
-                } else {
-                    System.out.println("Aucun TypeOperation trouvée avec cet ID.");
-                }
+            } catch (SQLException ex) {
+            System.out.println("Erreur lors de la modification du TypeOperation : " + ex.getMessage());
             }
-        } catch (SQLException ex) {
-            System.out.println("Erreur lors de la suppression du TypeOperation : " + ex.getMessage());
-        }
+        TypeOperation machineModifiee = new TypeOperation(IdtypeOperation, ref, des);
+        return machineModifiee ;
     }
     
-    public void rechercherTypeOperation() {
-        try {
+    public static TypeOperation supprimerTypeOperation( Connection conn)throws SQLException {
             Scanner scanner = new Scanner(System.in);
-            System.out.print("Entrez l'ID de la machine à supprimer : ");
-            int IdTypeOperation = scanner.nextInt();
+            System.out.print("Entrez l'ID de la machine que vous souhaitez modifier : ");
+            int Idmachine = scanner.nextInt();
+            scanner.nextLine();
             
             try (PreparedStatement pst = conn.prepareStatement(
-                    "SELECT id, des,  FROM typeoperation WHERE id = ?")) {
-                pst.setInt(1, IdTypeOperation);
-                java.sql.ResultSet rs = pst.executeQuery();
-                if (rs.next()) {
-                    int id = rs.getInt("id");
-                    String des = rs.getString("des");
-                    System.out.println("ID: " + id + ", Description: " + des);
-                } else {
-                    System.out.println("Aucun TypeOperation trouvée avec cet ID.");
-                }
+                    "DELETE FROM typeOperation WHERE id = ?")) {
+                pst.setInt(1, Idmachine); 
+                
+            } catch (SQLException ex) {
+                System.out.println("Erreur lors de la suppression du TypeOperation : " + ex.getMessage());
             }
-        } catch (SQLException ex) {
-            System.out.println("Erreur lors de la recherche du TypeOperation: " + ex.getMessage());
-        }
+        TypeOperation machineSupprimee = new TypeOperation(Idmachine, null, null);
+        return machineSupprimee ;
+    }
+    
+    public static TypeOperation rechercherTypeOperation( Connection conn)throws SQLException {
+            Scanner scanner = new Scanner(System.in);
+            System.out.print("Entrez l'ID de la machine que vous souhaitez chercher : ");
+            int IdTypeOperation = scanner.nextInt();
+            scanner.nextLine();
+            System.out.print("Entrez l'ID du typeOperation : ");
+            String desTypeOperation = scanner.nextLine();
+            
+            int id = 0;
+            String ref = null;
+            String des = null;
+            
+            try (PreparedStatement pst = conn.prepareStatement(
+                    "SELECT id, ref, des, puissance FROM typeOperation WHERE id = ? AND des =?")) {
+                pst.setInt(1, IdTypeOperation);
+                pst.setString(2, desTypeOperation);
+                ResultSet rs = pst.executeQuery();
+                if (rs.next()) {
+                    id = rs.getInt("id");
+                    ref = rs.getString("ref");
+                    des = rs.getString("des");
+                }else{
+                    System.out.println("Aucune TypeOperation trouvé");
+                }
+            }catch (SQLException ex) {
+                System.out.println("Erreur lors de la recherche du TypeOperation : " + ex.getMessage());
+            }
+        TypeOperation machineTrouvee = new TypeOperation(IdTypeOperation, ref, des);
+        return machineTrouvee ;
     }
 
-    // Méthode pour afficher la liste des TypeOperation
-    public void listeDesTypeOperation() {
-        try {
+    public static List listeDesTypeOperations(Connection conn) throws SQLException {
+        List<TypeOperation> typeOperations = new ArrayList<>();
             
-            try (Statement stmt = conn.createStatement();
-                 ResultSet rs = stmt.executeQuery(
-                         "SELECT id, des FROM typeoperation")) {
-               
+        try (PreparedStatement pst = conn.prepareStatement(
+             "SELECT id, ref, des, puissance FROM typeOperation")) {
+            try (ResultSet rs = pst.executeQuery()){
                 while (rs.next()) {
                     int id = rs.getInt("id");
+                    String ref = rs.getString("ref");
                     String des = rs.getString("des");
-                    System.out.println("ID: " + id + ", Description: " + des);
+                    typeOperations.add(new TypeOperation(id, ref, des));
                 }
+            } catch (SQLException ex) {
+                System.out.println("Erreur lors de la récupération des typeOperations : " + ex.getMessage()); 
             }
-        } catch (SQLException ex) {
-            System.out.println("Erreur lors de la récupération des machines : " + ex.getMessage()); 
         }
+        return typeOperations;
     }
 
-    public void menuGestionTypeOperation() {
-        Scanner scanner = new Scanner(System.in);
-        int choix;
+    public static void menuGestionTypeOperation(Connection conn) {
+        int choix = 0;
         do {
-            System.out.println("\nGestion des TypeOperation");
-            System.out.println("==============");
-            System.out.println("1. Ajouter un TypeOperation");
-            System.out.println("2. Modifier un TypeOperation");
-            System.out.println("3. Supprimer un TypeOperation");
-            System.out.println("4. Afficher le TypeOperation à rechercher");
-            System.out.println("5. Afficher la liste des TypeOperation");
-            System.out.println("0. Retour au menu principal");
-            System.out.println("");
-            System.out.print("Votre choix : ");
-            choix = scanner.nextInt();
-            scanner.nextLine();
+            try (Scanner scanner = new Scanner(System.in)) {
+                System.out.println("\nGestion des TypeOperation");
+                System.out.println("==============");
+                System.out.println("1. Ajouter un TypeOperation");
+                System.out.println("2. Modifier un TypeOperation");
+                System.out.println("3. Supprimer un TypeOperation");
+                System.out.println("4. Afficher le TypeOperation à rechercher");
+                System.out.println("5. Afficher la liste des TypeOperation");
+                System.out.println("0. Retour au menu principal");
+                System.out.println("");
+                System.out.print("Votre choix : ");
+                choix = scanner.nextInt();
+                scanner.nextLine();
 
-            switch (choix) {
-                case 1:
-                    ajouterTypeOperation();
-                    break;
-                case 2:
-                    modifierTypeOperation();
-                    break;
-                case 3:
-                    supprimerTypeOperation();
-                    break;
-                case 4:
-                    rechercherTypeOperation();
-                    break;
-                case 5:
-                    listeDesTypeOperation();
-                    break;
-                case 0:
-                    System.out.println("Retour au menu principal");
-                    break;
-                default:
-                    System.out.println("Choix invalide. Veuillez réessayer.");
-                    break;
+                switch (choix) {
+                    case 1:
+                        ajouterTypeOperation(conn);
+                        break;
+                    case 2:
+                        modifierTypeOperation(conn);
+                        break;
+                    case 3:
+                        supprimerTypeOperation(conn);
+                        break;
+                    case 4:
+                        rechercherTypeOperation(conn);
+                        break;
+                    case 5:
+                        listeDesTypeOperations(conn);
+                        break;
+                    case 0:
+                        System.out.println("Retour au menu principal");
+                        break;
+                    default:
+                        System.out.println("Choix invalide. Veuillez réessayer.");
+                        break;
+                }
+            } catch (Exception e) {
+                System.out.println("Erreur de saisie : " + e.getMessage());
             }
         } while (choix != 0);
-    }  
-    
+    }
 }
-
