@@ -18,14 +18,13 @@ public class TypeOperation {
     private String ref;
     private String des;
 
-    public TypeOperation(int id, String ref, String des) {
+    public TypeOperation(int id, String des) {
         this.id = id;
-        this.ref = ref;
         this.des = des;
     }
 
-    public TypeOperation(String ref, String des) {
-        this(-1, ref, des);
+    public TypeOperation( String des) {
+        this(-1, des);
     }
 
     public int getId() {
@@ -34,14 +33,6 @@ public class TypeOperation {
 
     public void setId(int id) {
         this.id = id;
-    }
-
-    public String getReference() {
-        return ref;
-    }
-
-    public void setReference(String ref) {
-        this.ref = ref;
     }
 
     public String getDescription() {
@@ -56,26 +47,22 @@ public class TypeOperation {
     public String toString() {
         return "Machine{" +
                 "id=" + id +
-                ", reference='" + ref + '\'' +
                 ", description='" + des  +
                 '}';
     }
 
     public static TypeOperation ajouterTypeOperation( Connection conn) throws SQLException {
         
-            Scanner scanner = new Scanner(System.in); 
-            System.out.print("Entrez la référence du TypeOperation : ");
-            String ref = scanner.nextLine();
+            Scanner scanner = new Scanner(System.in);
             System.out.print("Entrez la description du TypeOperation : ");
             String des = scanner.nextLine();
             
-            TypeOperation nouvelleTypeOperation = new TypeOperation(ref, des);
+            TypeOperation nouvelleTypeOperation = new TypeOperation(des);
             
             try (PreparedStatement pst = conn.prepareStatement(
-                 "INSERT INTO typeOperation (ref, des) VALUES (?, ?, ?)",
+                 "INSERT INTO typeOperation (des) VALUES (?)",
                     PreparedStatement.RETURN_GENERATED_KEYS)) {
-                pst.setString(1, nouvelleTypeOperation.ref);
-                pst.setString(2, nouvelleTypeOperation.des);
+                pst.setString(1, nouvelleTypeOperation.des);
                 pst.executeUpdate();
                 try (ResultSet rid = pst.getGeneratedKeys()) {
                     rid.next();
@@ -96,21 +83,18 @@ public class TypeOperation {
             int IdtypeOperation = scanner.nextInt();
             scanner.nextLine();
             
-            System.out.print("Entrez la nouvelle référence du TypeOperation : ");
-            String ref = scanner.nextLine();
             System.out.print("Entrez la nouvelle description du TypeOperation : ");
             String des = scanner.nextLine();
 
             try (PreparedStatement pst = conn.prepareStatement(
-                  "UPDATE typeOperation SET ref = ?, des = ? WHERE id = ?")) {
-                pst.setString(1, ref);
-                pst.setString(2, des);
-                pst.setInt(4, IdtypeOperation);
+                  "UPDATE typeOperation SET des = ? WHERE id = ?")) {
+                pst.setString(1, des);
+                pst.setInt(2, IdtypeOperation);
                 
             } catch (SQLException ex) {
             System.out.println("Erreur lors de la modification du TypeOperation : " + ex.getMessage());
             }
-        TypeOperation machineModifiee = new TypeOperation(IdtypeOperation, ref, des);
+        TypeOperation machineModifiee = new TypeOperation(IdtypeOperation, des);
         return machineModifiee ;
     }
     
@@ -127,7 +111,7 @@ public class TypeOperation {
             } catch (SQLException ex) {
                 System.out.println("Erreur lors de la suppression du TypeOperation : " + ex.getMessage());
             }
-        TypeOperation machineSupprimee = new TypeOperation(Idmachine, null, null);
+        TypeOperation machineSupprimee = new TypeOperation(Idmachine, null);
         return machineSupprimee ;
     }
     
@@ -150,7 +134,6 @@ public class TypeOperation {
                 ResultSet rs = pst.executeQuery();
                 if (rs.next()) {
                     id = rs.getInt("id");
-                    ref = rs.getString("ref");
                     des = rs.getString("des");
                 }else{
                     System.out.println("Aucune TypeOperation trouvé");
@@ -158,7 +141,7 @@ public class TypeOperation {
             }catch (SQLException ex) {
                 System.out.println("Erreur lors de la recherche du TypeOperation : " + ex.getMessage());
             }
-        TypeOperation machineTrouvee = new TypeOperation(IdTypeOperation, ref, des);
+        TypeOperation machineTrouvee = new TypeOperation(IdTypeOperation, des);
         return machineTrouvee ;
     }
 
@@ -166,13 +149,12 @@ public class TypeOperation {
         List<TypeOperation> typeOperations = new ArrayList<>();
             
         try (PreparedStatement pst = conn.prepareStatement(
-             "SELECT id, ref, des, puissance FROM typeOperation")) {
+             "SELECT id, des, puissance FROM typeOperation")) {
             try (ResultSet rs = pst.executeQuery()){
                 while (rs.next()) {
                     int id = rs.getInt("id");
-                    String ref = rs.getString("ref");
                     String des = rs.getString("des");
-                    typeOperations.add(new TypeOperation(id, ref, des));
+                    typeOperations.add(new TypeOperation(id, des));
                 }
             } catch (SQLException ex) {
                 System.out.println("Erreur lors de la récupération des typeOperations : " + ex.getMessage()); 
