@@ -2,7 +2,8 @@
 package fr.insa.gestionproduction;
 
 import static fr.insa.gestionproduction.Machine.menuGestionMachines;
-import static fr.insa.gestionproduction.TypeOperation.menuGestionTypeOperation;
+import static fr.insa.gestionproduction.Produit.menuGestionTypeOperation;
+import static fr.insa.gestionproduction.TypeOperation.menuGestionProduit;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
@@ -172,8 +173,7 @@ public class GestionProduction {
                     gestion3.menuGestionAssociations();
                     break;
                 case 6:
-                    Produit gestion4 = new Produit(conn);
-                    gestion4.menuGestionProduit();
+                    menuGestionProduit(conn);
                     break;
                 case 7:
                     Operation gestion5 = new Operation(conn);

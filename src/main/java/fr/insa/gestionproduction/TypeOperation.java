@@ -45,7 +45,7 @@ public class TypeOperation {
 
     @Override
     public String toString() {
-        return "Machine{" +
+        return "TypeOperation{" +
                 "id=" + id +
                 ", description='" + des  +
                 '}';
@@ -163,7 +163,7 @@ public class TypeOperation {
         return typeOperations;
     }
 
-    public static void menuGestionTypeOperation(Connection conn) {
+    public static void menuGestionProduit(Connection conn) {
         int choix = 0;
         do {
             try (Scanner scanner = new Scanner(System.in)) {
