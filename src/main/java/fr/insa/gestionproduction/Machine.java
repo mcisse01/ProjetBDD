@@ -202,10 +202,10 @@ public class Machine {
         return machines;
     }
 
-    public static void menuGestionMachines(Connection conn) {
+    public static void menuGestionMachines(Connection conn) throws SQLException {
         int choix = 0;
         do {
-            try (Scanner scanner = new Scanner(System.in)) {
+                Scanner scanner = new Scanner(System.in);
                 System.out.println("\nGestion des Machines");
                 System.out.println("==============");
                 System.out.println("1. Ajouter une machine");
@@ -241,9 +241,6 @@ public class Machine {
                         System.out.println("Choix invalide. Veuillez réessayer.");
                         break;
                 }
-            } catch (Exception e) {
-                System.out.println("Erreur de saisie : " + e.getMessage());
-            }
         } while (choix != 0);
     }
 }
