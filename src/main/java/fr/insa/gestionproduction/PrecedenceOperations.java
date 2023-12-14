@@ -62,21 +62,21 @@ public class PrecedenceOperations {
                 '}';
     }
 
-    public static Operation ajouterPrecedenceOperations( Connection conn) throws SQLException {
+    public static PrecedenceOperations ajouterPrecedenceOperations( Connection conn) throws SQLException {
         
             Scanner scanner = new Scanner(System.in); 
             System.out.print("Entrez la référence de la machine : ");
-            int idTypeOperation = scanner.nextInt();
+            int opavant = scanner.nextInt();
             System.out.print("Entrez la description de la machine : ");
-            int idProduit = scanner.nextInt(); 
+            int opapres = scanner.nextInt(); 
             
-            PrecedenceOperations nouvelleOperation = new PrecedenceOperations(idTypeOperation, idProduit);
+            PrecedenceOperations nouvelleOperation = new PrecedenceOperations(opavant, opapres);
             
             try (PreparedStatement pst = conn.prepareStatement(
-                 "INSERT INTO operation (idTypeOperation, idProduit) VALUES (?, ?)",
+                 "INSERT INTO precedence (opavant, opapres) VALUES (?, ?)",
                     PreparedStatement.RETURN_GENERATED_KEYS)) {
-                pst.setInt(1, nouvelleOperation.idTypeOperation);
-                pst.setInt(2, nouvelleOperation.idProduit);
+                pst.setInt(1, nouvelleOperation.opavant);
+                pst.setInt(2, nouvelleOperation.opapres);
                 pst.executeUpdate();
                 try (ResultSet rid = pst.getGeneratedKeys()) {
                     rid.next();
@@ -90,7 +90,7 @@ public class PrecedenceOperations {
         return nouvelleOperation;   
     }
        
-    public static Operation supprimerOperation( Connection conn)throws SQLException {
+    public static PrecedenceOperations supprimerPrecedenceOperations( Connection conn)throws SQLException {
             Scanner scanner = new Scanner(System.in);
             System.out.print("Entrez l'ID de la machine que vous souhaitez modifier : ");
             int IdOperation = scanner.nextInt();
@@ -104,22 +104,22 @@ public class PrecedenceOperations {
             } catch (SQLException ex) {
                 System.out.println("Erreur lors de la suppression de la machine : " + ex.getMessage());
             }
-        Operation machineSupprimee = new Operation(IdOperation, 0, 0);
+        PrecedenceOperations machineSupprimee = new PrecedenceOperations(IdOperation, 0, 0);
         return machineSupprimee ;
     }
     
 
-    public static List listeDesOperations(Connection conn) throws SQLException {
-        List<Operation> operations = new ArrayList<>();
+    public static List listeDesPrecedenceOperations(Connection conn) throws SQLException {
+        List<PrecedenceOperations> operations = new ArrayList<>();
             
         try (PreparedStatement pst = conn.prepareStatement(
-             "SELECT id, idTypeOperation, idProduit FROM operation")) {
+             "SELECT id, idTypeOperation, idProduit FROM precedence")) {
             try (ResultSet rs = pst.executeQuery()){
                 while (rs.next()) {
                     int id = rs.getInt("id");
                     int idTypeOperation = rs.getInt("idTypeOperation");
                     int idProduit = rs.getInt("idProduit");
-                    operations.add(new Operation(id, idTypeOperation, idProduit));
+                    operations.add(new PrecedenceOperations(id, idTypeOperation, idProduit));
                 }
             } catch (SQLException ex) {
                 System.out.println("Erreur lors de la récupération des operations : " + ex.getMessage()); 
@@ -128,7 +128,7 @@ public class PrecedenceOperations {
         return operations;
     }
 
-    public static void menuGestionOperations(Connection conn) throws SQLException {
+    public static void menuGestionPrecedenceOperations(Connection conn) throws SQLException {
         int choix = 0;
         do {
                 Scanner scanner = new Scanner(System.in);
@@ -144,13 +144,13 @@ public class PrecedenceOperations {
 
                 switch (choix) {
                     case 1:
-                        ajouterOperation(conn);
+                        ajouterPrecedenceOperations(conn);
                         break;
                     case 3:
-                        supprimerOperation(conn);
+                        supprimerPrecedenceOperations(conn);
                         break;
                     case 5:
-                        listeDesOperations(conn);
+                        listeDesPrecedenceOperations(conn);
                         break;
                     case 0:
                         System.out.println("Retour au menu principal");
@@ -162,114 +162,3 @@ public class PrecedenceOperations {
         } while (choix != 0);
     }
 }
-public class PrecedenceOperations {
-
-    private Connection conn;
-
-    public PrecedenceOperations(Connection conn) {
-        this.conn = conn;
-    }
-
-    public void ajouterPrecedenceOperation() {
-        try {
-            Scanner scanner = new Scanner(System.in);
-            System.out.print("Entrez l'opération avant : ");
-            int opAvant = scanner.nextInt();
-            System.out.print("Entrez l'opération après : ");
-            int opApres = scanner.nextInt();
-            scanner.nextLine();
-            
-            try (PreparedStatement pst = conn.prepareStatement(
-                  "INSERT INTO precedence (opavant, opapres) VALUES (?, ?)")) {
-                pst.setInt(1, opAvant);
-                pst.setInt(2, opApres);
-                pst.executeUpdate();
-                System.out.println("Précédence d'opération ajoutée avec succès !");
-            }
-        } catch (SQLException ex) {
-            System.out.println("Erreur lors de l'ajout de la précédence d'opération : " + ex.getMessage());
-        }
-    }
-
-    public void supprimerPrecedenceOperation() {
-        try {
-             Scanner scanner = new Scanner(System.in);
-             System.out.print("Entrez l'opération avant à supprimer : ");
-             int opAv = scanner.nextInt();
-             System.out.print("Entrez l'opération après à supprimer : ");
-             int opAp = scanner.nextInt();
-             scanner.nextLine();
-             
-            try (java.sql.PreparedStatement pst = conn.prepareStatement(
-                    "DELETE FROM precedence WHERE opavant = ? AND opapres = ?")) {
-                pst.setInt(1, opAv);
-                pst.setInt(2, opAp);
-                int nbreligne = pst.executeUpdate();
-
-                if (nbreligne > 0) {
-                    System.out.println("Préférence d'opération supprimée avec succès !");
-                } else {
-                    System.out.println("Aucune préférence d'opération trouvée avec les opérations données.");
-                }
-            }
-        } catch (SQLException ex) {
-            System.out.println("Erreur lors de la suppression de la préférence d'opération : " + ex.getMessage());
-        }
-    }
-
-    public void afficherPrecedenceOperations() {
-        try {
-            
-            try (PreparedStatement pst = conn.prepareStatement(
-                    "SELECT opavant, opapres FROM precedence")) {
-                ResultSet rs = pst.executeQuery();
-
-                System.out.println("Préférences d'opérations :");
-                while (rs.next()) {
-                    int opAvant = rs.getInt("opavant");
-                    int opApres = rs.getInt("opapres");
-                    System.out.println("Opération avant : " + opAvant + ", Opération après : " + opApres);
-                }
-            }
-        } catch (SQLException ex) {
-            System.out.println("Erreur lors de la récupération des préférences d'opération : " + ex.getMessage());
-        }
-    }
-
-    public void menuGestionPrecedenceOperations() {
-        Scanner scanner = new Scanner(System.in);
-        int choix;
-        do {
-            System.out.println("\nGestion des Préférences d'Opérations");
-            System.out.println("====================================");
-            System.out.println("1. Ajouter une préférence d'opération");
-            System.out.println("2. Supprimer une préférence d'opération");
-            System.out.println("3. Afficher les préférences d'opérations");
-            System.out.println("0. Retour au menu principal");
-            System.out.println("");
-            System.out.print("Votre choix : ");
-            choix = scanner.nextInt();
-            scanner.nextLine();
-
-            switch (choix) {
-                case 1:
-                    ajouterPrecedenceOperation();
-                    break;
-                case 2:
-                    supprimerPrecedenceOperation();
-                    break;
-                case 3:
-                    afficherPrecedenceOperations();
-                    break;
-                case 0:
-                    System.out.println("Retour au menu principal");
-                    break;
-                default:
-                    System.out.println("Choix invalide. Veuillez réessayer.");
-                    break;
-            }
-        } while (choix != 0);
-    }
- 
-}
-

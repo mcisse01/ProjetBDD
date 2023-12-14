@@ -3,6 +3,7 @@ package fr.insa.gestionproduction;
 
 import static fr.insa.gestionproduction.Machine.menuGestionMachines;
 import static fr.insa.gestionproduction.Operation.menuGestionOperations;
+import static fr.insa.gestionproduction.PrecedenceOperations.menuGestionPrecedenceOperations;
 import static fr.insa.gestionproduction.Produit.menuGestionProduits;
 import static fr.insa.gestionproduction.Realise.menuGestionRealisations;
 import static fr.insa.gestionproduction.TypeOperation.menuGestionTypeOperations;
@@ -181,8 +182,7 @@ public class GestionProduction {
                     menuGestionOperations(conn);
                     break;
                 case 8:
-                    PrecedenceOperations gestion6 = new PrecedenceOperations(conn);
-                    gestion6.menuGestionPrecedenceOperations();
+                    menuGestionPrecedenceOperations(conn);
                     break;
                 case 0:
                     System.out.println("Au revoir !");
