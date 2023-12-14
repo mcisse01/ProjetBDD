@@ -2,8 +2,10 @@
 package fr.insa.gestionproduction;
 
 import static fr.insa.gestionproduction.Machine.menuGestionMachines;
-import static fr.insa.gestionproduction.Produit.menuGestionTypeOperation;
-import static fr.insa.gestionproduction.TypeOperation.menuGestionProduit;
+import static fr.insa.gestionproduction.Operation.menuGestionOperations;
+import static fr.insa.gestionproduction.Produit.menuGestionProduits;
+import static fr.insa.gestionproduction.Realise.menuGestionRealisations;
+import static fr.insa.gestionproduction.TypeOperation.menuGestionTypeOperations;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
@@ -98,6 +100,7 @@ public class GestionProduction {
 
         // Table precedence
         st.executeUpdate( "Create table if not exists precedence ("
+                + "id INT AUTO_INCREMENT PRIMARY KEY,"
                 + "opavant INT,"
                 + "opapres INT,"
                 + "UNIQUE KEY fk_operation (opavant, opapres),"
@@ -166,18 +169,16 @@ public class GestionProduction {
                     menuGestionMachines(conn);
                     break;
                 case 4:
-                    menuGestionTypeOperation(conn);
+                    menuGestionTypeOperations(conn);
                     break;
                 case 5:
-                    Realise gestion3 = new Realise(conn);
-                    gestion3.menuGestionAssociations();
+                    menuGestionRealisations(conn);
                     break;
                 case 6:
-                    menuGestionProduit(conn);
+                    menuGestionProduits(conn);
                     break;
                 case 7:
-                    Operation gestion5 = new Operation(conn);
-                    gestion5.menuGestionOperation();
+                    menuGestionOperations(conn);
                     break;
                 case 8:
                     PrecedenceOperations gestion6 = new PrecedenceOperations(conn);

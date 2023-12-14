@@ -163,22 +163,21 @@ public class TypeOperation {
         return typeOperations;
     }
 
-    public static void menuGestionProduit(Connection conn) {
+    public static void menuGestionTypeOperations(Connection conn) throws SQLException {
         int choix = 0;
         do {
-            try (Scanner scanner = new Scanner(System.in)) {
+                Scanner scanner = new Scanner(System.in);
                 System.out.println("\nGestion des TypeOperation");
                 System.out.println("==============");
-                System.out.println("1. Ajouter un TypeOperation");
-                System.out.println("2. Modifier un TypeOperation");
-                System.out.println("3. Supprimer un TypeOperation");
-                System.out.println("4. Afficher le TypeOperation à rechercher");
-                System.out.println("5. Afficher la liste des TypeOperation");
+                System.out.println("1. Ajouter un Produit");
+                System.out.println("2. Modifier un Produit");
+                System.out.println("3. Supprimer un Produit");
+                System.out.println("4. Afficher le Produit à rechercher");
+                System.out.println("5. Afficher la liste des Produit");
                 System.out.println("0. Retour au menu principal");
                 System.out.println("");
                 System.out.print("Votre choix : ");
                 choix = scanner.nextInt();
-                scanner.nextLine();
 
                 switch (choix) {
                     case 1:
@@ -203,9 +202,6 @@ public class TypeOperation {
                         System.out.println("Choix invalide. Veuillez réessayer.");
                         break;
                 }
-            } catch (Exception e) {
-                System.out.println("Erreur de saisie : " + e.getMessage());
-            }
         } while (choix != 0);
     }
 }

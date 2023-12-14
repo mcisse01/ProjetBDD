@@ -89,35 +89,7 @@ public class Operation {
             
         return nouvelleOperation;   
     }
-    
-//    public static Operation modifierMachine( Connection conn) throws SQLException {
-//        
-//            Scanner scanner = new Scanner(System.in);
-//            System.out.print("Entrez l'ID de la machine que vous souhaitez modifier : ");
-//            int Idmachine = scanner.nextInt();
-//            scanner.nextLine();
-//            
-//            System.out.print("Entrez la nouvelle référence de la machine : ");
-//            String ref = scanner.nextLine();
-//            System.out.print("Entrez la nouvelle description de la machine : ");
-//            String des = scanner.nextLine();
-//            System.out.print("Entrez la nouvelle puissance de la machine : ");
-//            float puissance = scanner.nextFloat();
-//
-//            try (PreparedStatement pst = conn.prepareStatement(
-//                  "UPDATE machine SET ref = ?, des = ?, puissance = ? WHERE id = ?")) {
-//                pst.setString(1, ref);
-//                pst.setString(2, des);
-//                pst.setFloat(3, puissance);
-//                pst.setInt(4, Idmachine);
-//                
-//            } catch (SQLException ex) {
-//            System.out.println("Erreur lors de la modification de la machine : " + ex.getMessage());
-//            }
-//        Machine machineModifiee = new Machine(Idmachine, ref, des, puissance);
-//        return machineModifiee ;
-//    }
-//    
+       
     public static Operation supprimerOperation( Connection conn)throws SQLException {
             Scanner scanner = new Scanner(System.in);
             System.out.print("Entrez l'ID de la machine que vous souhaitez modifier : ");
@@ -136,38 +108,6 @@ public class Operation {
         return machineSupprimee ;
     }
     
-//    public static Machine rechercherMachine( Connection conn)throws SQLException {
-//            Scanner scanner = new Scanner(System.in);
-//            System.out.print("Entrez l'ID de la machine que vous souhaitez chercher : ");
-//            int Idmachine = scanner.nextInt();
-//            scanner.nextLine();
-//            System.out.print("Entrez la puissance minimale de la machine : ");
-//            float puissanceMinimale = scanner.nextFloat();
-//            
-//            int id = 0;
-//            String ref = null;
-//            String des = null;
-//            float puissance = 0.0f ;
-//            
-//            try (PreparedStatement pst = conn.prepareStatement(
-//                    "SELECT id, ref, des, puissance FROM machine WHERE id = ? AND puissance > ?")) {
-//                pst.setInt(1, Idmachine);
-//                pst.setFloat(2, puissanceMinimale);
-//                ResultSet rs = pst.executeQuery();
-//                if (rs.next()) {
-//                    id = rs.getInt("id");
-//                    ref = rs.getString("ref");
-//                    des = rs.getString("des");
-//                    puissance = rs.getFloat("puissance");
-//                }else{
-//                    System.out.println("Aucune machine trouvé");
-//                }
-//            }catch (SQLException ex) {
-//                System.out.println("Erreur lors de la recherche de la machine : " + ex.getMessage());
-//            }
-//        Machine machineTrouvee = new Machine(Idmachine, ref, des, puissance);
-//        return machineTrouvee ;
-//    }
 
     public static List listeDesOperations(Connection conn) throws SQLException {
         List<Operation> operations = new ArrayList<>();
@@ -195,9 +135,7 @@ public class Operation {
                 System.out.println("\nGestion des Machines");
                 System.out.println("==============");
                 System.out.println("1. Ajouter une machine");
-                System.out.println("2. Modifier une machine");
                 System.out.println("3. Supprimer une machine");
-                System.out.println("4. Afficher la machine à rechercher");
                 System.out.println("5. Afficher la liste des machines");
                 System.out.println("0. Retour au menu principal");
                 System.out.println("");
@@ -208,15 +146,9 @@ public class Operation {
                     case 1:
                         ajouterOperation(conn);
                         break;
-//                    case 2:
-//                        modifierOperation(conn);
-//                        break;
                     case 3:
                         supprimerOperation(conn);
                         break;
-//                    case 4:
-//                        rechercherMachine(conn);
-//                        break;
                     case 5:
                         listeDesOperations(conn);
                         break;

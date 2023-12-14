@@ -181,10 +181,10 @@ public class Produit {
         return produits;
     }
 
-    public static void menuGestionTypeOperation(Connection conn) {
+    public static void menuGestionProduits(Connection conn) throws SQLException {
         int choix = 0;
         do {
-            try (Scanner scanner = new Scanner(System.in)) {
+                Scanner scanner = new Scanner(System.in);
                 System.out.println("\nGestion des TypeOperation");
                 System.out.println("==============");
                 System.out.println("1. Ajouter un Produit");
@@ -196,7 +196,6 @@ public class Produit {
                 System.out.println("");
                 System.out.print("Votre choix : ");
                 choix = scanner.nextInt();
-                scanner.nextLine();
 
                 switch (choix) {
                     case 1:
@@ -221,9 +220,6 @@ public class Produit {
                         System.out.println("Choix invalide. Veuillez réessayer.");
                         break;
                 }
-            } catch (Exception e) {
-                System.out.println("Erreur de saisie : " + e.getMessage());
-            }
         } while (choix != 0);
     }
 }
