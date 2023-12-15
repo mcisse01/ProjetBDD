@@ -13,10 +13,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Scanner;
  
-/**
- *
- * @author moussa
- */
+
 public class GestionProduction {
     
     private Connection conn;
@@ -38,24 +35,176 @@ public class GestionProduction {
 
     // Méthode pour se connecter au serveur M3
     public static Connection connectSurServeurM3() throws SQLException {
-        return connectGeneralMySQL("92.222.25.165", 3306,
-                "m3_mcisse01", "m3_mcisse01", "2c72a1d3");
+        return connectGeneralMySQL("92.222.25.165", 3306, "m3_mcisse01", "m3_mcisse01", "2c72a1d3");
     }
     
     // Méthode principale du programme
     public static void main(String[] args) {
         try (Connection con = connectSurServeurM3()) {
             System.out.println("Connecté à la base de données."); 
-            GestionProduction gestion = new GestionProduction (con); 
-            gestion.menuPrincipal(); 
+            menuPrincipal(con); 
         } catch (SQLException ex) {
             throw new Error("Connexion impossible", ex); 
         }
     }
 
+//    // Méthode pour créer la table 'machine' dans la base de données
+//    public static void creerSchema(Connection conn) throws SQLException {
+//        conn.setAutoCommit(false);
+//        try (Statement st = conn.createStatement()) {
+//
+//            // Table machine
+//            st.executeUpdate( "Create table if not exists machine ("
+//                    + "id integer primary key AUTO_INCREMENT, "
+//                    + "ref varchar(255), "
+//                    + "des text, "
+//                    + "puissance float)"
+//            ); // Exécute la requête pour créer la table
+//
+//            // Table typeoperation
+//            st.executeUpdate( "Create table if not exists typeoperation ("
+//                    + "id integer primary key AUTO_INCREMENT, "
+//                    + "des text"
+//            );
+//
+//            // Table realise
+//            st.executeUpdate( "Create table if not exists realise ("
+//                    + "id integer primary key AUTO_INCREMENT, "
+//                    + "idmachine integer, "
+//                    + "idtypeoperation integer)"
+//            );
+//            // Table produit
+//            st.executeUpdate( "Create table if not exists produit ("
+//                    + "id integer primary key AUTO_INCREMENT, "
+//                    + "ref varchar(255), "
+//                    + "des text)"
+//            );
+//
+//            // Table operation
+//            st.executeUpdate( "Create table if not exists operation ("
+//                    + "id integer primary key AUTO_INCREMENT, "
+//                    + "idtypeoperation integer, "
+//                    + "idproduit integer)"
+//            );
+//
+//            // Table precedence
+//            st.executeUpdate( "Create table if not exists precedence ("
+//                    + "opavant integer,"
+//                    + "opapres integer)"
+//            );
+//            
+//            conn.commit();
+//            
+//          // Ajout de contraintes étrangères aux tables realise, operation, precedence
+//            st.executeUpdate("Alter table realise "
+//                    + " add constraint fk_realise_idmachine "
+//                    + " FOREIGN KEY (idmachine) REFERENCES machine(id)"
+//            );
+//            st.executeUpdate("Alter table realise "
+//                    + " add constraint fk_realise_idtypeoperation "
+//                    + " FOREIGN KEY (idtypeoperation) REFERENCES typeoperation(id)"
+//            );
+//
+//            st.executeUpdate("Alter table operation "
+//                    + " add constraint fk_operation_idtypeoperation "
+//                    + " FOREIGN KEY (idtypeoperation) REFERENCES typeoperation(id)"
+//            );
+//            st.executeUpdate("Alter table operation "
+//                    + " add constraint fk_operation_idproduit "
+//                    + " FOREIGN KEY (idproduit) REFERENCES produit(id)"
+//            );
+//
+//            st.executeUpdate("Alter table precedence "
+//                    + " add constraint fk_precedence_opavant "
+//                    + " FOREIGN KEY (opavant) REFERENCES operation(id)"
+//            );
+//            st.executeUpdate("Alter table precedence "
+//                    + " add constraint fk_precedence_opapres "
+//                    + " FOREIGN KEY (opapres) REFERENCES operation(id)"
+//            );
+//            
+//        } catch (SQLException ex) {
+//            conn.rollback();
+//            throw ex;
+//        } finally {
+//            conn.setAutoCommit(true);
+//        }
+//    }
+//    
+//    // Méthode pour supprimer le schéma complet de la base de données
+//    public static void supprimerSchema(Connection conn) throws SQLException {
+//        try (Statement st = conn.createStatement()) {
+//            try {
+//                st.executeUpdate( "Alter table precedence "
+//                        + "drop constraint fk_precedence_opavant");
+//            } catch (SQLException ex) {
+//            }
+//            try {
+//                st.executeUpdate( "Alter table precedence "
+//                        + "drop constraint fk_precedence_opapres");
+//            } catch (SQLException ex) {
+//            }
+//            
+//            
+//            try {
+//                st.executeUpdate( "Alter table operation "
+//                        + "drop constraint fk_operation_idtypeoperation");
+//            } catch (SQLException ex) {
+//            }
+//            try {
+//                st.executeUpdate( "Alter table operation "
+//                        + "drop constraint fk_operation_idproduit");
+//            } catch (SQLException ex) {
+//            }
+//            
+//            
+//            try {
+//                st.executeUpdate( "Alter table realise"
+//                        + "drop constraint fk_realise_idmachine");
+//            } catch (SQLException ex) {
+//            }
+//            try {
+//                st.executeUpdate( "Alter table realise"
+//                        + "drop constraint fk_operation_idtypeoperation");
+//            } catch (SQLException ex) {
+//            }
+//            
+//            
+//            try {
+//                st.executeUpdate( "DROP TABLE precedence");
+//            } catch (SQLException ex) {
+//            }
+//            try {
+//                st.executeUpdate("DROP TABLE operation");
+//            } catch (SQLException ex) {
+//            }
+//            try {
+//                st.executeUpdate("DROP TABLE produit");
+//            } catch (SQLException ex) {
+//            }
+//            try {
+//                st.executeUpdate("DROP TABLE realise");
+//            } catch (SQLException ex) {
+//            }
+//            try {
+//                st.executeUpdate("DROP TABLE typeoperation");
+//            } catch (SQLException ex) {
+//            }
+//            try {
+//                st.executeUpdate("DROP TABLE machine");
+//            } catch (SQLException ex) {
+//            }
+//            
+//            System.out.println("Schéma supprimé avec succès !");
+//        } catch (SQLException ex) {
+//            System.out.println("Erreur lors de la suppression du schéma : " + ex.getMessage());
+//        }
+//    }
+//    
     // Méthode pour créer la table 'machine' dans la base de données
-    public void creerSchema() {
-    try (Statement st = conn.createStatement()) {
+    public static void creerSchema(Connection conn) throws SQLException {
+        try (Statement st = conn.createStatement()) {
+
         
         // Table machine
         st.executeUpdate( "Create table if not exists machine ("
@@ -101,7 +250,6 @@ public class GestionProduction {
 
         // Table precedence
         st.executeUpdate( "Create table if not exists precedence ("
-                + "id INT AUTO_INCREMENT PRIMARY KEY,"
                 + "opavant INT,"
                 + "opapres INT,"
                 + "UNIQUE KEY fk_operation (opavant, opapres),"
@@ -116,7 +264,7 @@ public class GestionProduction {
     }
     
     // Méthode pour supprimer le schéma complet de la base de données
-    public void supprimerSchema() {
+    public static void supprimerSchema(Connection conn) throws SQLException {
         try (Statement st = conn.createStatement()) {
             
              st.executeUpdate( "DROP TABLE IF EXISTS precedence");
@@ -138,7 +286,7 @@ public class GestionProduction {
     }
     
     // Méthode pour afficher le menu principal du programme et traiter les choix de l'utilisateur
-    public void menuPrincipal() throws SQLException {
+    public static void menuPrincipal(Connection conn) throws SQLException {
         Scanner scanner = new Scanner(System.in);
         int choix;
         do {
@@ -161,10 +309,10 @@ public class GestionProduction {
 
             switch (choix) {
                 case 1:
-                    creerSchema();
+                    creerSchema(conn);
                     break;
                 case 2:
-                    supprimerSchema();
+                    supprimerSchema(conn);
                     break;
                 case 3:
                     menuGestionMachines(conn);

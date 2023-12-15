@@ -151,9 +151,6 @@ public class Machine {
     
     public static Machine rechercherMachine( Connection conn)throws SQLException {
             Scanner scanner = new Scanner(System.in);
-            System.out.print("Entrez l'ID de la machine que vous souhaitez chercher : ");
-            int Idmachine = scanner.nextInt();
-            scanner.nextLine();
             System.out.print("Entrez la puissance minimale de la machine : ");
             float puissanceMinimale = scanner.nextFloat();
             
@@ -163,9 +160,8 @@ public class Machine {
             float puissance = 0.0f ;
             
             try (PreparedStatement pst = conn.prepareStatement(
-                    "SELECT id, ref, des, puissance FROM machine WHERE id = ? AND puissance > ?")) {
-                pst.setInt(1, Idmachine);
-                pst.setFloat(2, puissanceMinimale);
+                    "SELECT id, ref, des, puissance FROM machine WHERE puissance > ?")) {
+                pst.setFloat(1, puissanceMinimale);
                 ResultSet rs = pst.executeQuery();
                 if (rs.next()) {
                     id = rs.getInt("id");
@@ -178,7 +174,7 @@ public class Machine {
             }catch (SQLException ex) {
                 System.out.println("Erreur lors de la recherche de la machine : " + ex.getMessage());
             }
-        Machine machineTrouvee = new Machine(Idmachine, ref, des, puissance);
+        Machine machineTrouvee = new Machine(id, ref, des, puissance);
         return machineTrouvee ;
     }
 

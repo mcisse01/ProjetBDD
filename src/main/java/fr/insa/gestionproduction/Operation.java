@@ -135,8 +135,8 @@ public class Operation {
                 System.out.println("\nGestion des Machines");
                 System.out.println("==============");
                 System.out.println("1. Ajouter une machine");
-                System.out.println("3. Supprimer une machine");
-                System.out.println("5. Afficher la liste des machines");
+                System.out.println("2. Supprimer une machine");
+                System.out.println("3. Afficher la liste des machines");
                 System.out.println("0. Retour au menu principal");
                 System.out.println("");
                 System.out.print("Votre choix : ");
@@ -146,10 +146,10 @@ public class Operation {
                     case 1:
                         ajouterOperation(conn);
                         break;
-                    case 3:
+                    case 2:
                         supprimerOperation(conn);
                         break;
-                    case 5:
+                    case 3:
                         listeDesOperations(conn);
                         break;
                     case 0:

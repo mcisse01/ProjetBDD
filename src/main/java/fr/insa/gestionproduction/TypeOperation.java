@@ -115,35 +115,32 @@ public class TypeOperation {
         return machineSupprimee ;
     }
     
-    public static TypeOperation rechercherTypeOperation( Connection conn)throws SQLException {
-            Scanner scanner = new Scanner(System.in);
-            System.out.print("Entrez l'ID de la machine que vous souhaitez chercher : ");
-            int IdTypeOperation = scanner.nextInt();
-            scanner.nextLine();
-            System.out.print("Entrez l'ID du typeOperation : ");
-            String desTypeOperation = scanner.nextLine();
-            
-            int id = 0;
-            String ref = null;
-            String des = null;
-            
-            try (PreparedStatement pst = conn.prepareStatement(
-                    "SELECT id, ref, des, puissance FROM typeOperation WHERE id = ? AND des =?")) {
-                pst.setInt(1, IdTypeOperation);
-                pst.setString(2, desTypeOperation);
-                ResultSet rs = pst.executeQuery();
+    public static TypeOperation rechercherTypeOperation(Connection conn) throws SQLException {
+        Scanner scanner = new Scanner(System.in);
+
+        System.out.print("Entrez la description du typeOperation : ");
+        String desTypeOperation = scanner.nextLine();
+
+        try (PreparedStatement pst = conn.prepareStatement(
+                "SELECT id, ref, des FROM typeOperation WHERE des = ?")) {
+            pst.setString(1, desTypeOperation);
+
+            try (ResultSet rs = pst.executeQuery()) {
                 if (rs.next()) {
-                    id = rs.getInt("id");
-                    des = rs.getString("des");
-                }else{
-                    System.out.println("Aucune TypeOperation trouvé");
+                    int id = rs.getInt("id");
+                    String des = rs.getString("des");
+                    System.out.println("TypeOperation trouvé : " + id + ", " + des);
+                    return new TypeOperation(id, des);
+                } else {
+                    System.out.println("Aucun TypeOperation trouvé.");
                 }
-            }catch (SQLException ex) {
-                System.out.println("Erreur lors de la recherche du TypeOperation : " + ex.getMessage());
             }
-        TypeOperation machineTrouvee = new TypeOperation(IdTypeOperation, des);
-        return machineTrouvee ;
-    }
+        } catch (SQLException ex) {
+            System.out.println("Erreur lors de la recherche du TypeOperation : " + ex.getMessage());
+        }
+
+        return null;
+        }
 
     public static List listeDesTypeOperations(Connection conn) throws SQLException {
         List<TypeOperation> typeOperations = new ArrayList<>();

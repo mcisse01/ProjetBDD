@@ -15,26 +15,12 @@ import java.util.List;
  */
 public class PrecedenceOperations {
     
-    private int id;
     private int opavant;
     private int opapres;
 
-    public PrecedenceOperations(int id, int opavant, int opapres) {
-        this.id = id;
+    public PrecedenceOperations(int opavant, int opapres) {
         this.opavant = opavant;
         this.opapres = opapres;
-    }
-
-    public PrecedenceOperations(int opavant, int opapres) {
-        this(-1, opavant, opapres );
-    }
-
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
     }
 
     public int getOpavant() {
@@ -55,71 +41,76 @@ public class PrecedenceOperations {
 
     @Override
     public String toString() {
-        return "Operation{" +
-                "id=" + id +
+        return "Precedence{" +
                 ", opavant='" + opavant + '\'' +
                 ", opapres='" + opapres +
                 '}';
     }
-
-    public static PrecedenceOperations ajouterPrecedenceOperations( Connection conn) throws SQLException {
-        
-            Scanner scanner = new Scanner(System.in); 
-            System.out.print("Entrez la référence de la machine : ");
-            int opavant = scanner.nextInt();
-            System.out.print("Entrez la description de la machine : ");
-            int opapres = scanner.nextInt(); 
-            
-            PrecedenceOperations nouvelleOperation = new PrecedenceOperations(opavant, opapres);
-            
-            try (PreparedStatement pst = conn.prepareStatement(
-                 "INSERT INTO precedence (opavant, opapres) VALUES (?, ?)",
-                    PreparedStatement.RETURN_GENERATED_KEYS)) {
-                pst.setInt(1, nouvelleOperation.opavant);
-                pst.setInt(2, nouvelleOperation.opapres);
-                pst.executeUpdate();
-                try (ResultSet rid = pst.getGeneratedKeys()) {
-                    rid.next();
-                    nouvelleOperation.setId(rid.getInt(1));
-                }
-                System.out.println("Operation ajoutée avec succès !");
-            } catch (SQLException ex) {
-                System.out.println("Erreur lors de l'ajout de la machine : " + ex.getMessage());
-            }
-            
-        return nouvelleOperation;   
-    }
-       
-    public static PrecedenceOperations supprimerPrecedenceOperations( Connection conn)throws SQLException {
-            Scanner scanner = new Scanner(System.in);
-            System.out.print("Entrez l'ID de la machine que vous souhaitez modifier : ");
-            int IdOperation = scanner.nextInt();
-            scanner.nextLine();
-            
-            try (PreparedStatement pst = conn.prepareStatement(
-                    "DELETE FROM operation WHERE id = ?")) {
-                pst.setInt(1, IdOperation); 
-                pst.executeUpdate();
-                
-            } catch (SQLException ex) {
-                System.out.println("Erreur lors de la suppression de la machine : " + ex.getMessage());
-            }
-        PrecedenceOperations machineSupprimee = new PrecedenceOperations(IdOperation, 0, 0);
-        return machineSupprimee ;
-    }
     
+    public static PrecedenceOperations ajouterPrecedenceOperations(Connection conn) throws SQLException {
+        Scanner scanner = new Scanner(System.in);
+        System.out.print("Entrez l'opération avant : ");
+        int opAvant = scanner.nextInt();
+        System.out.print("Entrez l'opération après : ");
+        int opApres = scanner.nextInt();
+
+        try (PreparedStatement pst = conn.prepareStatement(
+                "INSERT INTO precedence (opavant, opapres) VALUES (?, ?)",
+                Statement.RETURN_GENERATED_KEYS)) {
+            pst.setInt(1, opAvant);
+            pst.setInt(2, opApres);
+
+            int nbreafeecete = pst.executeUpdate();
+
+            if (nbreafeecete > 0) {
+                try (ResultSet generatedKeys = pst.getGeneratedKeys()) {
+                    if (generatedKeys.next()) {
+                        System.out.println("Précédence ajoutée avec succès");
+                        return new PrecedenceOperations( opAvant, opApres);
+                    }
+                }
+            }
+        } catch (SQLException ex) {
+            System.out.println("Erreur lors de l'ajout de la précédence : " + ex.getMessage());
+        }
+        return null;
+    }
+
+    public static PrecedenceOperations supprimerPrecedenceOperations(Connection conn) throws SQLException {
+        Scanner scanner = new Scanner(System.in);
+        System.out.print("Entrez l'opération avant : ");
+        int opAvant = scanner.nextInt();
+        System.out.print("Entrez l'opération après : ");
+        int opApres = scanner.nextInt();
+
+        try (PreparedStatement pst = conn.prepareStatement(
+                "DELETE FROM precedence WHERE opavant = ? AND opapres = ?")) {
+            pst.setInt(1, opAvant);
+            pst.setInt(2, opApres);
+
+            int nbreAffectees = pst.executeUpdate();
+            if (nbreAffectees > 0) {
+                System.out.println("Précédence supprimée avec succès !");
+                return new PrecedenceOperations(opAvant, opApres); 
+            } else {
+                System.out.println("Aucune précédence correspondante n'a été trouvée.");
+            }
+        } catch (SQLException ex) {
+            System.out.println("Erreur lors de la suppression de la précédence : " + ex.getMessage());
+        }
+        return null;
+    }
 
     public static List listeDesPrecedenceOperations(Connection conn) throws SQLException {
         List<PrecedenceOperations> operations = new ArrayList<>();
             
         try (PreparedStatement pst = conn.prepareStatement(
-             "SELECT id, idTypeOperation, idProduit FROM precedence")) {
+             "SELECT opavant, opapres FROM precedence")) {
             try (ResultSet rs = pst.executeQuery()){
                 while (rs.next()) {
-                    int id = rs.getInt("id");
-                    int idTypeOperation = rs.getInt("idTypeOperation");
-                    int idProduit = rs.getInt("idProduit");
-                    operations.add(new PrecedenceOperations(id, idTypeOperation, idProduit));
+                    int opavant = rs.getInt("opavant");
+                    int opapres = rs.getInt("opapres");
+                    operations.add(new PrecedenceOperations(opavant, opapres));
                 }
             } catch (SQLException ex) {
                 System.out.println("Erreur lors de la récupération des operations : " + ex.getMessage()); 
