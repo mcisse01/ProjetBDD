@@ -114,33 +114,6 @@ public class TypeOperation {
         TypeOperation machineSupprimee = new TypeOperation(Idmachine, null);
         return machineSupprimee ;
     }
-    
-    public static TypeOperation rechercherTypeOperation(Connection conn) throws SQLException {
-        Scanner scanner = new Scanner(System.in);
-
-        System.out.print("Entrez la description du typeOperation : ");
-        String desTypeOperation = scanner.nextLine();
-
-        try (PreparedStatement pst = conn.prepareStatement(
-                "SELECT id, ref, des FROM typeOperation WHERE des = ?")) {
-            pst.setString(1, desTypeOperation);
-
-            try (ResultSet rs = pst.executeQuery()) {
-                if (rs.next()) {
-                    int id = rs.getInt("id");
-                    String des = rs.getString("des");
-                    System.out.println("TypeOperation trouvé : " + id + ", " + des);
-                    return new TypeOperation(id, des);
-                } else {
-                    System.out.println("Aucun TypeOperation trouvé.");
-                }
-            }
-        } catch (SQLException ex) {
-            System.out.println("Erreur lors de la recherche du TypeOperation : " + ex.getMessage());
-        }
-
-        return null;
-        }
 
     public static List listeDesTypeOperations(Connection conn) throws SQLException {
         List<TypeOperation> typeOperations = new ArrayList<>();
@@ -169,8 +142,7 @@ public class TypeOperation {
                 System.out.println("1. Ajouter un Produit");
                 System.out.println("2. Modifier un Produit");
                 System.out.println("3. Supprimer un Produit");
-                System.out.println("4. Afficher le Produit à rechercher");
-                System.out.println("5. Afficher la liste des Produit");
+                System.out.println("4. Afficher la liste des Produit");
                 System.out.println("0. Retour au menu principal");
                 System.out.println("");
                 System.out.print("Votre choix : ");
@@ -187,9 +159,6 @@ public class TypeOperation {
                         supprimerTypeOperation(conn);
                         break;
                     case 4:
-                        rechercherTypeOperation(conn);
-                        break;
-                    case 5:
                         listeDesTypeOperations(conn);
                         break;
                     case 0:

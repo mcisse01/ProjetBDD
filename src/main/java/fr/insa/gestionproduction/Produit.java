@@ -130,37 +130,6 @@ public class Produit {
         Produit machineSupprimee = new Produit(IdProduit, null, null);
         return machineSupprimee ;
     }
-    
-    public static Produit rechercherProduit( Connection conn)throws SQLException {
-            Scanner scanner = new Scanner(System.in);
-            System.out.print("Entrez l'ID de la machine que vous souhaitez chercher : ");
-            int IdTypeOperation = scanner.nextInt();
-            scanner.nextLine();
-            System.out.print("Entrez l'ID du Produit : ");
-            String desTypeOperation = scanner.nextLine();
-            
-            int id = 0;
-            String ref = null;
-            String des = null;
-            
-            try (PreparedStatement pst = conn.prepareStatement(
-                    "SELECT id, ref, des FROM produit WHERE id = ? AND des =?")) {
-                pst.setInt(1, IdTypeOperation);
-                pst.setString(2, desTypeOperation);
-                ResultSet rs = pst.executeQuery();
-                if (rs.next()) {
-                    id = rs.getInt("id");
-                    ref = rs.getString("ref");
-                    des = rs.getString("des");
-                }else{
-                    System.out.println("Aucune TypeOperation trouvé");
-                }
-            }catch (SQLException ex) {
-                System.out.println("Erreur lors de la recherche du TypeOperation : " + ex.getMessage());
-            }
-        Produit machineTrouvee = new Produit(IdTypeOperation, ref, des);
-        return machineTrouvee ;
-    }
 
     public static List listeDesProduits(Connection conn) throws SQLException {
         List<Produit> produits = new ArrayList<>();
@@ -190,8 +159,7 @@ public class Produit {
                 System.out.println("1. Ajouter un Produit");
                 System.out.println("2. Modifier un Produit");
                 System.out.println("3. Supprimer un Produit");
-                System.out.println("4. Afficher le Produit à rechercher");
-                System.out.println("5. Afficher la liste des Produit");
+                System.out.println("4. Afficher la liste des Produit");
                 System.out.println("0. Retour au menu principal");
                 System.out.println("");
                 System.out.print("Votre choix : ");
@@ -208,9 +176,6 @@ public class Produit {
                         supprimerProduit(conn);
                         break;
                     case 4:
-                        rechercherProduit(conn);
-                        break;
-                    case 5:
                         listeDesProduits(conn);
                         break;
                     case 0:
