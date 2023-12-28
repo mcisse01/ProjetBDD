@@ -8,6 +8,8 @@ import java.sql.PreparedStatement;
 import java.util.Scanner;
 import java.sql.ResultSet;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 /**
  *
@@ -148,35 +150,6 @@ public class Machine {
         Machine machineSupprimee = new Machine(Idmachine, null, null, 0.0f);
         return machineSupprimee ;
     }
-    
-    public static Machine rechercherMachine( Connection conn)throws SQLException {
-            Scanner scanner = new Scanner(System.in);
-            System.out.print("Entrez la puissance minimale de la machine : ");
-            float puissanceMinimale = scanner.nextFloat();
-            
-            int id = 0;
-            String ref = null;
-            String des = null;
-            float puissance = 0.0f ;
-            
-            try (PreparedStatement pst = conn.prepareStatement(
-                    "SELECT id, ref, des, puissance FROM machine WHERE puissance > ?")) {
-                pst.setFloat(1, puissanceMinimale);
-                ResultSet rs = pst.executeQuery();
-                if (rs.next()) {
-                    id = rs.getInt("id");
-                    ref = rs.getString("ref");
-                    des = rs.getString("des");
-                    puissance = rs.getFloat("puissance");
-                }else{
-                    System.out.println("Aucune machine trouvé");
-                }
-            }catch (SQLException ex) {
-                System.out.println("Erreur lors de la recherche de la machine : " + ex.getMessage());
-            }
-        Machine machineTrouvee = new Machine(id, ref, des, puissance);
-        return machineTrouvee ;
-    }
 
     public static List listeDesMachines(Connection conn) throws SQLException {
         List<Machine> machines = new ArrayList<>();
@@ -198,6 +171,30 @@ public class Machine {
         return machines;
     }
 
+
+    public static List<Machine> triDesMachines(Connection conn) throws SQLException {
+        List<Machine> machines = new ArrayList<>();
+
+        try (PreparedStatement pst = conn.prepareStatement(
+                "SELECT id, ref, des, puissance FROM machine")) {
+            try (ResultSet rs = pst.executeQuery()) {
+                while (rs.next()) {
+                    int id = rs.getInt("id");
+                    String ref = rs.getString("ref");
+                    String des = rs.getString("des");
+                    float puissance = rs.getFloat("puissance");
+                    machines.add(new Machine(id, ref, des, puissance));
+                }
+            } catch (SQLException ex) {
+                System.out.println("Erreur lors de la récupération des machines : " + ex.getMessage());
+            }
+        }
+
+        // Tri de la liste par puissance maximale
+        Collections.sort(machines, Comparator.comparingDouble(Machine::getPuissance).reversed());
+
+        return machines;
+    }
     public static void menuGestionMachines(Connection conn) throws SQLException {
         int choix = 0;
         do {
@@ -225,7 +222,7 @@ public class Machine {
                         supprimerMachine(conn);
                         break;
                     case 4:
-                        rechercherMachine(conn);
+                        triDesMachines(conn);
                         break;
                     case 5:
                         listeDesMachines(conn);
