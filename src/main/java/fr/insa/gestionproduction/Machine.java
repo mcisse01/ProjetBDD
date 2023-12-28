@@ -204,8 +204,8 @@ public class Machine {
                 System.out.println("1. Ajouter une machine");
                 System.out.println("2. Modifier une machine");
                 System.out.println("3. Supprimer une machine");
-                System.out.println("4. Afficher la machine à rechercher");
-                System.out.println("5. Afficher la liste des machines");
+                System.out.println("4. Afficher la liste des machines");
+                System.out.println("5. Afficher la liste des machines par puissance maximale");
                 System.out.println("0. Retour au menu principal");
                 System.out.println("");
                 System.out.print("Votre choix : ");
